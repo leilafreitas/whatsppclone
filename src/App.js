@@ -43,6 +43,8 @@ export default()=>{
           {chatList.map((item,key)=>(
             <ChatListItem
               key={key}
+              data={item}
+              active={activeChat.chatId===item.chatId}
               onClick={()=>setActiveChat(item)}
             />
           ))}

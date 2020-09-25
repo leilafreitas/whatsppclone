@@ -43,10 +43,12 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
+    overflow: hidden;
 
 }
 .chatWindow--body{
     flex:1;
+    padding:20px 30px;
     overflow-y: auto;
     background-color:#e5ddd5 ;
     background-size:cover;
@@ -81,4 +83,24 @@
 .chatWindow-pos{
     display: flex;
     margin: 0 15px;
+}
+aside.emoji-picker-react{
+    width:auto;
+    background: none;
+
+}
+.emoji-picker-react .emoji-group:before{
+    background: none;
+}
+.chatWindow-emojiarea{
+    height: 200px;
+    overflow-y: hidden;
+    transition: all ease 0.3s;
+}
+.chatWindow--body::-webkit-scrollbar{
+    width: 6px;
+    height: 6px;
+  }
+.chatWindow--body::-webkit-scrollbar-thumb{
+    background-color: rgba(0,0,0,0.2); 
 }

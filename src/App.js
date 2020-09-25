@@ -7,6 +7,7 @@ import ChatIcon from '@material-ui/icons/Chat';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import SearchIcon from '@material-ui/icons/Search';
 import ChatIntro from './components/ChatIntro';
+import NewChat from './components/NewChat';
 export default()=>{
   const [chatList,setChatList] = useState([
     {chatId:1,title:'fulano',image:'https://www.w3schools.com/howto/img_avatar2.png'},
@@ -16,16 +17,31 @@ export default()=>{
 
   ]);
   const [activeChat,setActiveChat]=useState({});
+  const [newChat,setNewChat]=useState(false);
+  const [user,setUser]=useState({
+    id:1234,
+    avatar:'https://www.w3schools.com/howto/img_avatar2.png',
+    name:'Leila F'
+  });
+  const handleNewChat=()=>{
+    setNewChat(true);
+  }
   return(
     <div className="app-window">
       <div className='sidebar'>
+        <NewChat
+          chatList={chatList}
+          user={user}
+          show={newChat}
+          setshow={setNewChat}
+        />
         <header>
-          <img className="header--avatar" src="https://www.w3schools.com/howto/img_avatar2.png"/>
+          <img className="header--avatar" src={user.avatar}/>
           <div className="header--buttons">
             <div className="header--btn">
               <DonutLargeIcon style={{color:'#919191'}}/>       
             </div>
-            <div className="header--btn">
+            <div className="header--btn" onClick={handleNewChat}>
               <ChatIcon style={{color:'#919191'}}/>       
             </div>
             <div className="header--btn">
@@ -52,7 +68,9 @@ export default()=>{
       </div>
       <div className='contentarea'>
         {activeChat.chatId !== undefined &&
-          <ChatWindow/>
+          <ChatWindow
+            user={user}
+          />
         }
         {activeChat.chatId === undefined &&
           <ChatIntro/>

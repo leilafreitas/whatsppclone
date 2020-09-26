@@ -9,7 +9,8 @@ import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
 import CloseIcon from '@material-ui/icons/Close';
 import SendIcon from '@material-ui/icons/Send';
 import MicIcon from '@material-ui/icons/Mic';
-export default({user})=>{
+import Api from '../Api';
+export default({user,data})=>{
     const body = useRef();
     let recognition = null;
     let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition ;
@@ -19,29 +20,8 @@ export default({user})=>{
     const[emojiOpen,setEmjiOpens]= useState(false);
     const[text,setText]=useState('');
     const[listening,setListening]=useState(false);
-    const[list,setList]=useState([
-        {autor:123, body:'lalaalla'},
-        {autor:123, body:'lalaalla2'},
-        {autor:1234, body:'bla bla bla'},
-        {autor:123, body:'lalaalla'},
-        {autor:123, body:'lalaalla2'},
-        {autor:1234, body:'bla bla bla'},
-        {autor:123, body:'lalaalla'},
-        {autor:123, body:'lalaalla2'},
-        {autor:1234, body:'bla bla bla'},
-        {autor:123, body:'lalaalla'},
-        {autor:123, body:'lalaalla2'},
-        {autor:1234, body:'bla bla bla'},
-        {autor:123, body:'lalaalla'},
-        {autor:123, body:'lalaalla2'},
-        {autor:1234, body:'bla bla bla'},
-        {autor:123, body:'lalaalla'},
-        {autor:123, body:'lalaalla2'},
-        {autor:1234, body:'bla bla bla'},
-        {autor:123, body:'lalaalla'},
-        {autor:123, body:'lalaalla2'},
-        {autor:1234, body:'bla bla bla'},
-    ]);
+    const[list,setList]=useState([]);
+    const[users,setUsers]=useState([]);
     useEffect(()=>{
         //SE a altura do conteuro for maior que a altura do body div, entao tem barra de rolagem
         if(body.current.scrollHeight > body.current.offsetHeight){
@@ -49,6 +29,11 @@ export default({user})=>{
             body.current.scrollTop= body.current.scrollHeight-body.current.offsetHeight;
         }
     },[list]);
+    useEffect(()=>{
+        setList([]);
+        let unsub= Api.onChatContent(data.chatId,setList,setUsers);
+        return unsub;
+    },[data.chatId]);
     const handleEmojiClick =(e,emojiObject)=>{
         setText(text+emojiObject.emoji);
     }
@@ -73,14 +58,23 @@ export default({user})=>{
         }
     }
     const handleSendClick =()=>{
-
+        if(text !== ''){
+            Api.sendMessage(data,user.id,'text',text,users);
+            setText('');
+            setEmjiOpens(false);
+        }
+    }
+    const handleInputKeyUP =(e)=>{
+        if(e.keyCode == 13){
+            handleSendClick();
+        }
     }
     return(
         <div className='chatWindow'>
             <div className="chatWindow--header">
                 <div className="chatWindow--headerinfo">
-                    <img src='https://www.w3schools.com/howto/img_avatar2.png'/>
-                    <div className='chatWindow--name'>Leila Freitas</div>
+                    <img src={data.image}/>
+                    <div className='chatWindow--name'>{data.title}</div>
                 </div>
                 <div className='chatWindow--headerbuttons'>
                     <div className="chatWindow--btn">
@@ -126,7 +120,8 @@ export default({user})=>{
                     <input text="text"
                     placeholder="Digite uma mensagem"
                     value={text}
-                    onChange={e=>setText(e.target.value)}/>
+                    onChange={e=>setText(e.target.value)}
+                    onKeyUp={handleInputKeyUP}/>
                 </div>
                 <div className="chatWindow-pos">
                     {text === '' &&
